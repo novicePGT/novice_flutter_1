@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -11,47 +11,69 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "hello flutter",
-            style: TextStyle(fontSize: 28),
+      home: HomePage(), // 홈페이지 보여주기
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    List<Map<String, dynamic>> dataList = [
+      {
+        "category": "수제버거",
+        "imgUrl":
+            "https://i.ibb.co/HBGKYn4/foodiesfeed-com-summer-juicy-beef-burger.jpg",
+      },
+      {
+        "category": "건강식",
+        "imgUrl":
+            "https://i.ibb.co/mB5YNs2/foodiesfeed-com-pumpkin-soup-with-pumpkin-seeds-on-top.jpg",
+      },
+      {
+        "category": "한식",
+        "imgUrl":
+            "https://i.ibb.co/Kzzpc97/Beautiful-vibrant-shot-of-traiditonal-Korean-meals.jpg",
+      },
+      {
+        "category": "디저트",
+        "imgUrl":
+            "https://i.ibb.co/DL5vJVZ/foodiesfeed-com-carefully-putting-a-blackberry-on-tiramisu.jpg",
+      },
+      {
+        "category": "피자",
+        "imgUrl": "https://i.ibb.co/qsm8QH4/pizza.jpg",
+      },
+      {
+        "category": "볶음밥",
+        "imgUrl":
+            "https://i.ibb.co/yQDkq2X/foodiesfeed-com-hot-shakshuka-in-a-cast-iron-pan.jpg",
+      },
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+          title: Text(
+            "Food Recipe",
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 28),
           ),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(
-                16), // EdgeInsets 는 전방위로 top, left, right, bottom 으로 나뉘는데 all 하게 되면 전방위로 바뀌게 된다.
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Image.network(
-                    "https://i.ibb.co/CwzHq4z/trans-logo-512.png",
-                    width: 81,
-                  ),
-                ),
-                TextField(
-                  decoration: InputDecoration(labelText: '이메일'),
-                ),
-                TextField(
-                  obscureText: true, // 비밀번호 형식으로 입력하기 위해 사용: *****
-                  decoration: InputDecoration(labelText: '비밀번호'),
-                ),
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.only(top: 16),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: Text('로그인'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+          elevation: 0,
+          backgroundColor: Colors.white,
+          centerTitle: false,
+          iconTheme: IconThemeData(color: Colors.black),
+          actions: [
+            IconButton(
+              onPressed: () {
+                print("Go to my page");
+              },
+              icon: Icon(
+                Icons.person_outline,
+              ),
+            )
+          ]),
     );
   }
 }
