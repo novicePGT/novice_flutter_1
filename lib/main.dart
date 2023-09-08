@@ -74,6 +74,80 @@ class HomePage extends StatelessWidget {
               ),
             )
           ]),
+      body: Column(
+        children: [
+          // 검색창
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "상품을 검색해주세요",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: Colors.black),
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    print("돋보기 아이콘 클릭");
+                  },
+                ),
+              ),
+            ),
+          ),
+          Divider(height: 1),
+
+          // 카테고리 목록
+          Expanded(
+            child: ListView.builder(
+              itemCount: dataList.length,
+              itemBuilder: (context, index) {
+                // dataList 에서 index에 해당하는 데이터 가져오기
+                Map<String, dynamic> data = dataList[index];
+                String category = data["category"];
+                String imgUrl = data["imgUrl"];
+
+                return Card(
+                  margin: const EdgeInsets.all(8),
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  // 위젯들을 위로 중첩하기 위해 Stack 사용
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // 배경이미지
+                      Image.network(
+                        imgUrl,
+                        width: double.infinity,
+                        height: 120,
+                        fit: BoxFit.cover, // 이미지 비율을 유지하며 꽉 채우기
+                      ),
+
+                      // 배경 위에 글씨가 보이도록 반투명한 박스 추가
+                      Container(
+                        width: double.infinity,
+                        height: 120,
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+
+                      // 카테고리
+                      Text(
+                        category,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 36,
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
