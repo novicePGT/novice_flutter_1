@@ -41,3 +41,18 @@ ListView, ListView.builder, ListView.separated 와 같은 위젯과 함꼐 사�
 - trailing: 오른쪽에 표시되는 위젯으로, 주로 추가 작업을 수행하는 버튼 또는 아이콘을 나타내는 데 사용됩니다.
 - onTap: 항목을 탭할 때 실행되는 함수를 정의합니다.
 
+## Positioned
+'Positioned()' 는 다른 위젯을 부모 위젯 내애ㅔ서 특정 위치로 배치할 때 사용된다.   
+Positioned 위젯은 일반적으로 Stack 과 함께 사용되며, Stack 위젯 내의 자식 위젯들을 겹쳐서 배치할 때 위치를 지정하는 데 유용하다.
+
+- left, top, right, bottom: 자식 위젯을 부모 위젯 내에서 어디에 배치할 것인지를 결정하는 속성으로, 각각 왼쪽, 위, 오른쪽, 아래의 위치를 지정합니다. 이 속성들 중 하나 또는 여러 개를 사용하여 위치를 정의할 수 있습니다.
+- width, height: 자식 위젯의 너비와 높이를 지정하는 속성으로, 자식 위젯의 크기를 제한할 때 사용됩니다.
+
+## CircleAvatar
+'CircleAvatar'는 원 형태의 사용자 프로필 이미지 또는 아이콘을 나타내는 데 주로 사용된다.   
+CircleAbatar 는 주어진 이미지나 아이콘을 원 형태로 자동으로 잘라내고 나머지 부분은 투명하게 처리한다.
+
+- backgroundColor: CircleAvatar의 배경색을 설정합니다.
+- backgroundImage: CircleAvatar의 배경 이미지를 설정합니다. 이 속성을 사용하면 사용자 프로필 이미지를 표시할 수 있습니다.
+- child: 원 내에 표시할 자식 위젯을 설정합니다. 이 속성을 사용하여 아이콘 또는 텍스트를 CircleAvatar 내에 배치할 수 있습니다.
+- radius: CircleAvatar의 반지름을 설정합니다.
