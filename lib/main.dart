@@ -1,8 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'bucket_service.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => BucketService(),
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -19,112 +31,90 @@ class MyApp extends StatelessWidget {
 
 /// 버킷 클래스
 class Bucket {
-  String title;
-  bool isComplete;
+  String job; // 할 일
+  bool isDone; // 완료 여부
 
-  Bucket(this.title, this.isComplete); // 생성자
+  Bucket(this.job, this.isDone); // 생성자
 }
 
 /// 홈 페이지
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  // property
-  List<Bucket> bucketList = [];
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("버킷 리스트"),
-      ),
-      body: bucketList.isEmpty
-          ? Center(child: Text("버킷 리스트를 작성해 주세요."))
-          : ListView.builder(
-              itemCount: bucketList.length,
-              itemBuilder: (context, index) {
-                Bucket bucket = bucketList[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: ListTile(
-                    title: Text(
-                      bucket.title,
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: bucket.isComplete ? Colors.grey : Colors.black,
-                        decoration: bucket.isComplete
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none,
-                      ),
-                    ),
-                    trailing: IconButton(
-                      icon: Icon(
-                        CupertinoIcons.delete,
-                      ),
-                      onPressed: () {
-                        showDeleteDialog(context, index);
-                      },
-                    ),
-                    onTap: () {
-                      setState(() {
-                        bucket.isComplete = !bucket.isComplete;
-                      });
-                    },
+    return Consumer<BucketService>(
+      builder: (context, bucketService, child) {
+        List<Bucket> bucketList = bucketService.bucketList;
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("버킷 리스트"),
+          ),
+          body: bucketList.isEmpty
+              ? Center(child: Text("버킷 리스트를 작성해 주세요."))
+              : ListView.builder(
+            itemCount: bucketList.length, // bucketList 개수 만큼 보여주기
+            itemBuilder: (context, index) {
+              var bucket = bucketList[index]; // index에 해당하는 bucket 가져오기
+              return ListTile(
+                // 버킷 리스트 할 일
+                title: Text(
+                  bucket.job,
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: bucket.isDone ? Colors.grey : Colors.black,
+                    decoration: bucket.isDone
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none,
                   ),
-                );
-              }),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () async {
-          // + 버튼 클릭시 버킷 생성 페이지로 이동
-          String? job = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => CreatePage()),
-          );
-          if (job != null) {
-            setState(() {
-              Bucket newBucket = Bucket(job, false);
-              bucketList.add(newBucket);
-            });
-          }
-        },
-      ),
-    );
-  }
-
-  void showDeleteDialog(BuildContext context, int index) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("정말로 삭제하시겠습니까?"),
-            actions: [
-              TextButton(
-                child: Text("취소"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              TextButton(
-                child: Text(
-                  "삭제",
-                  style: TextStyle(color: Colors.red),
                 ),
-                onPressed: () {
-                  setState(() {
-                    bucketList.removeAt(index);
-                  });
-                  Navigator.pop(context);
+                // 삭제 아이콘 버튼
+                trailing: IconButton(
+                  icon: Icon(CupertinoIcons.delete),
+                  onPressed: () {
+                    // 삭제 버튼 클릭시
+                    AlertDialog(
+                      title: Text("삭제"),
+                      content: Text("삭제하시겠습니까?"),
+                      actions: [
+                        TextButton(
+                          child: Text("취소"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        TextButton(
+                          child: Text("삭제", style: TextStyle(color: Colors.red)),
+                          onPressed: () {
+                            bucketService.deleteBucket(index);
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                onTap: () {
+                  // 아이템 클릭시
+                  bucket.isDone = !bucket.isDone;
+                  bucketService.updateBucket(bucket, index);
                 },
-              ),
-            ],
-          );
-        });
+              );
+            },
+          ),
+          floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () {
+              // + 버튼 클릭시 버킷 생성 페이지로 이동
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => CreatePage()),
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -137,9 +127,10 @@ class CreatePage extends StatefulWidget {
 }
 
 class _CreatePageState extends State<CreatePage> {
-  // property
-  // TextField 컨트롤러: TextField 의 값을 가져올 때 사용한다.
+  // TextField의 값을 가져올 때 사용합니다.
   TextEditingController textController = TextEditingController();
+
+  // 경고 메세지
   String? error;
 
   @override
@@ -185,13 +176,15 @@ class _CreatePageState extends State<CreatePage> {
                   String job = textController.text;
                   if (job.isEmpty) {
                     setState(() {
-                      error = "내용을 입력해주세요.";
+                      error = "내용을 입력해주세요."; // 내용이 없는 경우 에러 메세지
                     });
                   } else {
                     setState(() {
-                      error = null;
+                      error = null; // 내용이 있는 경우 에러 메세지 숨기기
                     });
-                    Navigator.pop(context, job);
+                    BucketService bucketSerivce = context.read<BucketService>();
+                    bucketSerivce.addBucket(job); // 버킷 추가
+                    Navigator.pop(context); // 화면을 종료합니다.
                   }
                 },
               ),
